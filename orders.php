@@ -29,7 +29,7 @@ $result = $stmt->get_result();
 <html lang="km">
 <head>
   <meta charset="UTF-8">
-  <title>📦 បញ្ជីបញ្ជាទិញ</title>
+  <title> បញ្ជីបញ្ជាទិញ</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
   <link href="https://fonts.googleapis.com/css2?family=Battambang:wght@300;400;700&display=swap" rel="stylesheet">
@@ -56,7 +56,7 @@ $result = $stmt->get_result();
 
 <body class="container py-4">
 
-  <h2>📦 បញ្ជីបញ្ជាទិញ</h2>
+  <h2> បញ្ជីបញ្ជាទិញ</h2>
 
   <?php if (isset($_GET['deleted'])): ?>
     <div class="alert alert-success">🗑️ លុបការបញ្ជាទិញបានជោគជ័យ!</div>
@@ -78,11 +78,11 @@ $result = $stmt->get_result();
   <table class="table table-striped table-bordered align-middle">
     <thead>
       <tr>
-        <th class="bg-primary text-light">លេខកូដ</th>
+        <th class="bg-primary  text-light">លេខកូដ</th>
         <th class="bg-primary text-light">ឈ្មោះនំ</th>
-        <th class="bg-primary text-light">តម្លៃ ($)</th>
+        <th class="bg-primary text-light">តម្លៃ </th>
         <th class="bg-primary text-light">បរិមាណ</th>
-        <th class="bg-primary text-light">សរុប ($)</th>
+        <th class="bg-primary text-light">សរុប </th>
          <th class="bg-primary text-light">កាលបរិច្ឆេទ</th>
       <th class="bg-primary text-light">ពេលវេលាម៉ោង</th>
         <th class="bg-primary text-light">ស្ថានភាព</th>
@@ -99,8 +99,8 @@ $result = $stmt->get_result();
 <tr>
   <td class="text-center"><?= $i++ ?></td>
 
-        <td><?= htmlspecialchars($row["cake_name"]) ?></td>
-        <td class="text-end">$<?= number_format($row["price"], 2) ?></td>
+        <td class="text-center"><?= htmlspecialchars($row["cake_name"]) ?></td>
+        <td class="text-center">$<?= number_format($row["price"], 2) ?></td>
         <td class="text-center"><?= $row["quantity"] ?></td>
         <td class="text-center">$<?= number_format($row["price"] * $row["quantity"], 2) ?></td>
         <td class="text-center"><?= $dateNow ?></td>

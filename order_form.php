@@ -1,10 +1,19 @@
 <?php
 session_start();
-include "db.php"; // Make sure this file sets up $conn as mysqli connection
+include "db.php";
 
-// Fetch cakes for the select dropdown
+// Get cakes for dropdown
 $cakes = $conn->query("SELECT * FROM cakes");
+
+// Get flash messages
+$successMessage = $_SESSION['success'] ?? null;
+$orderIds = $_SESSION['order_ids'] ?? null;
+$errorMessages = $_SESSION['errors'] ?? null;
+
+// Clear messages after displaying once
+unset($_SESSION['success'], $_SESSION['order_ids'], $_SESSION['errors']);
 ?>
+
 <!DOCTYPE html>
 <html lang="km">
 <head>
@@ -53,6 +62,23 @@ $cakes = $conn->query("SELECT * FROM cakes");
 <div class="form-container shadow-sm">
   <h1>បង្កើតការបញ្ជាទិញថ្មី</h1>
 
+  <?php if ($successMessage): ?>
+    <div class="alert alert-success"><?= htmlspecialchars($successMessage) ?></div>
+    <p>
+      ចុច <a href="invoice.php?order_ids=<?= implode(',', $orderIds) ?>">ទីនេះ</a> ដើម្បីមើលវិក័យប័ត្រ
+    </p>
+  <?php endif; ?>
+
+  <?php if ($errorMessages && count($errorMessages) > 0): ?>
+    <div class="alert alert-danger">
+      <ul>
+        <?php foreach ($errorMessages as $error): ?>
+          <li><?= htmlspecialchars($error) ?></li>
+        <?php endforeach; ?>
+      </ul>
+    </div>
+  <?php endif; ?>
+
   <form id="order-form" method="POST" action="order_submit.php">
     <div class="mb-3 d-flex gap-2 align-items-center">
       <select id="cake-select" class="form-select" style="flex: 3;">
@@ -69,7 +95,9 @@ $cakes = $conn->query("SELECT * FROM cakes");
       <button type="button" id="add-to-order" class="btn btn-success" style="flex: 1;">Add</button>
     </div>
 
-    <div id="order-list" class="mb-3"></div>
+    <div id="order-list" class="mb-3">
+      <!-- List of added items will appear here -->
+    </div>
 
     <!-- Hidden inputs for submitting -->
     <div id="hidden-inputs"></div>
@@ -106,10 +134,10 @@ $cakes = $conn->query("SELECT * FROM cakes");
       return;
     }
 
+    // Create order item div
     const orderItem = document.createElement('div');
     orderItem.classList.add('order-item');
     orderItem.setAttribute('data-cake-id', cakeId);
-
     orderItem.innerHTML = `
       <div>${cakeName} x ${quantity}</div>
       <button type="button" class="btn btn-danger btn-sm remove-item">លុប</button>
@@ -117,6 +145,7 @@ $cakes = $conn->query("SELECT * FROM cakes");
 
     orderList.appendChild(orderItem);
 
+    // Add hidden inputs for form submission
     const inputCakeId = document.createElement('input');
     inputCakeId.type = 'hidden';
     inputCakeId.name = 'cake_id[]';
