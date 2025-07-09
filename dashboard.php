@@ -236,8 +236,8 @@ if ($search !== '') {
   <h2>បញ្ជីនំ</h2>
   <table class="table table-bordered table-striped align-middle">
   <thead class=" text-white text-center bg-success ">
-      <tr>
-        <th>ID</th>
+      <tr class="color-white text-center ">
+        <th >ID</th>
         <th>រូបភាព</th>
         <th>ឈ្មោះនំ</th>
         <th>តម្លៃ</th>
@@ -246,10 +246,10 @@ if ($search !== '') {
         <th>សកម្មភាព</th>
       </tr>
     </thead>
-    <tbody>
+    <tbody class="text-center">
       <?php while ($cake = $cakes->fetch_assoc()): ?>
       <tr>
-        <td><?= $cake['id'] ?></td>
+        <td ><?= $cake['id'] ?></td>
         <td><img src="images/<?= htmlspecialchars($cake['image']) ?>" width="80" class="img-thumbnail"></td>
         <td><?= htmlspecialchars($cake['name']) ?></td>
         <td>$<?= number_format($cake['price'], 2) ?></td>

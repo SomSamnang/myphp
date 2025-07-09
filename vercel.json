@@ -1,0 +1,39 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "dashboard.php",
+      "use": "@vercel/php"
+    },
+    {
+      "src": "index.php",
+      "use": "@vercel/php"
+    },
+    {
+      "src": "cakeweb.css",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "favicon.ico",
+      "use": "@vercel/static"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/dashboard.php",
+      "dest": "/dashboard.php"
+    },
+    {
+      "src": "/",
+      "dest": "/index.php"
+    },
+    {
+      "src": "/cakeweb.css",
+      "dest": "/cakeweb.css"
+    },
+    {
+      "src": "/favicon.ico",
+      "dest": "/favicon.ico"
+    }
+  ]
+}

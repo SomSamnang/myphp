@@ -182,7 +182,7 @@ if ($search !== '') {
   <!-- Cakes Table -->
   <h2>បញ្ជីនំ</h2>
   <table class="table table-bordered table-striped align-middle">
-    <thead>
+    <thead class="text-white text-center bg-success">
       <tr>
         <th>ID</th>
         <th>រូបភាព</th>
