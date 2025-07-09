@@ -34,6 +34,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   <meta charset="UTF-8">
   <title>បន្ថែមនំថ្មី</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <style>
     body {
       font-family: 'Battambang', Arial, sans-serif;
@@ -67,8 +68,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
       <input type="file" name="image" class="form-control" required>
     </div>
     <div class="col-md-12">
-      <button type="submit" class="btn btn-success">💾 រក្សាទុក</button>
-      <a href="index.php" class="btn btn-secondary">⬅️ ត្រឡប់ក្រោយ</a>
+      <button type="submit" class="btn btn btn-primary"><i class="fa-solid fa-floppy-disk"></i> រក្សាទុក</button>
+      <a href="index.php" class="btn btn-secondary">ត្រឡប់</a>
     </div>
   </form>
 </body>

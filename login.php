@@ -61,7 +61,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     h2 {
       text-align: center;
       margin-bottom: 25px;
-      color: #2c3e50;
+           color: blue;
+      font-family: 'Angkor', serif;
     }
   </style>
 </head>
@@ -85,8 +86,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
       <input name="password" type="password" class="form-control" placeholder="បញ្ចូលពាក្យសម្ងាត់" required>
     </div>
 
-    <button type="submit" class="btn btn-primary w-100">➡️ ចូល</button>
-    <a href="register.php" class="btn btn-secondary w-100 mt-2">📋 ចុះឈ្មោះថ្មី</a>
+    <button type="submit" class="btn btn-primary w-100">ចូល</button>
+    <a href="register.php" class="btn btn-secondary w-100 mt-2"> ចុះឈ្មោះថ្មី</a>
   </form>
 </div>
 

@@ -17,9 +17,6 @@ $toDate = isset($_GET["to_date"]) ? $_GET["to_date"] : date('Y-m-d');
 $whereClause = "o.order_date BETWEEN ? AND ?";
 
 $stmtOrders = $conn->prepare("SELECT COUNT(*) AS total FROM orders o WHERE $whereClause");
-if (!$stmtOrders) {
-    die("Prepare failed (orders): (" . $conn->errno . ") " . $conn->error);
-}
 $stmtOrders->bind_param("ss", $fromDate, $toDate);
 $stmtOrders->execute();
 $totalOrders = $stmtOrders->get_result()->fetch_assoc()["total"];
@@ -30,9 +27,6 @@ $stmtIncome = $conn->prepare("
   JOIN cakes c ON o.cake_id = c.id
   WHERE $whereClause
 ");
-if (!$stmtIncome) {
-    die("Prepare failed (income): (" . $conn->errno . ") " . $conn->error);
-}
 $stmtIncome->bind_param("ss", $fromDate, $toDate);
 $stmtIncome->execute();
 $totalIncome = $stmtIncome->get_result()->fetch_assoc()["income"];
@@ -46,9 +40,6 @@ $stmtBestCake = $conn->prepare("
   ORDER BY total_quantity DESC
   LIMIT 1
 ");
-if (!$stmtBestCake) {
-    die("Prepare failed (best cake): (" . $conn->errno . ") " . $conn->error);
-}
 $stmtBestCake->bind_param("ss", $fromDate, $toDate);
 $stmtBestCake->execute();
 $bestCakeRow = $stmtBestCake->get_result()->fetch_assoc();
@@ -57,20 +48,38 @@ $bestCakeQty = $bestCakeRow ? $bestCakeRow["total_quantity"] : 0;
 
 $search = isset($_GET['search']) ? trim($_GET['search']) : '';
 
+date_default_timezone_set("Asia/Phnom_Penh");
+$dateNow = date("d-F-Y", strtotime($cake['created_date']));
+$timeNow= date("g:i A", strtotime($cake['created_time']));
+
+
 if ($search !== '') {
     $stmtCakes = $conn->prepare("SELECT * FROM cakes WHERE name LIKE CONCAT('%', ?, '%')");
-    if (!$stmtCakes) {
-        die("Prepare failed (search cakes): (" . $conn->errno . ") " . $conn->error);
-    }
     $stmtCakes->bind_param("s", $search);
     $stmtCakes->execute();
     $cakes = $stmtCakes->get_result();
 } else {
     $cakes = $conn->query("SELECT * FROM cakes");
-    if (!$cakes) {
-        die("Query cakes failed: (" . $conn->errno . ") " . $conn->error);
-    }
 }
+
+$stmtPaid = $conn->prepare("
+  SELECT COUNT(*) AS total_paid FROM orders
+  WHERE payment_status = 'paid' AND order_date BETWEEN ? AND ?
+");
+$stmtPaid->bind_param("ss", $fromDate, $toDate);
+$stmtPaid->execute();
+$totalPaid = $stmtPaid->get_result()->fetch_assoc()["total_paid"];
+
+$stmtPaidAmount = $conn->prepare("
+  SELECT SUM(o.quantity * c.price) AS total_paid_amount
+  FROM orders o
+  JOIN cakes c ON o.cake_id = c.id
+  WHERE o.payment_status = 'paid' AND o.order_date BETWEEN ? AND ?
+");
+$stmtPaidAmount->bind_param("ss", $fromDate, $toDate);
+$stmtPaidAmount->execute();
+$totalPaidAmount = $stmtPaidAmount->get_result()->fetch_assoc()["total_paid_amount"];
+
 ?>
 
 <!DOCTYPE html>
@@ -78,9 +87,10 @@ if ($search !== '') {
 <head>
   <meta charset="UTF-8" />
   <title>Admin Dashboard</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
-  <link href="https://fonts.googleapis.com/css2?family=Angkor&family=Battambang:wght@100;300;400;700;900&family=Koulen&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Angkor&family=Battambang:wght@100;300;400;700;900&family=Koulen&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
   <style>
     body, html {
       font-family: 'Battambang', Arial, sans-serif;
@@ -93,177 +103,217 @@ if ($search !== '') {
       font-weight: bold;
       color: #333;
       font-family: 'Angkor', serif;
-      font-style: normal; 
+      font-style: normal;
       text-align: center;
-      color: bule;
-      
-
+    }
+    .txt {
+     font-family: "Moul", serif;
+      font-weight: 400;
+      font-style: normal;
+      text-align: center;
     }
     h3 {
       color: #333;
       font-weight: 400;
       font-style: normal;
     }
+  
     .card {
       margin-bottom: 20px;
     }
-
-    .btn-primary {
-      background-color: #007bff;
-      color: #ffffff;
-      border-color: #007bff;
+    .btn-primary:hover, .btn-success:hover, .btn-warning:hover, .btn-danger:hover, .btn-info:hover {
+      color: #fff;
     }
-    .btn-primary:hover {
-      background-color: #0056b3;
-      color: #ffffff;
-    }
-
-    .btn-success {
-      background-color: #28a745;
-      color: #ffffff;
-      border-color: #28a745;
-    }
-    .btn-success:hover {
-      background-color: #1e7e34;
-      color: #ffffff;
-    }
-
-    .btn-warning {
-      background-color: #ffc107;
-      color: #000000;
-      border-color: #ffc107;
-    }
-    .btn-warning:hover {
-      background-color: #e0a800;
-      color: #000000;
-    }
-
-    .btn-danger {
-      background-color: #dc3545;
-      color: #ffffff;
-      border-color: #dc3545;
-    }
-    .btn-danger:hover {
-      background-color: #bd2130;
-      color: #ffffff;
-    }
-
-    .btn-info {
-      background-color: #17a2b8;
-      color: #ffffff;
-      border-color: #17a2b8;
-    }
-    .btn-info:hover {
-      background-color: #117a8b;
-      color: #ffffff;
-    }
-
-    .btn-outline-primary {
-      color: #007bff;
-      border-color: #007bff;
-    }
-    .btn-outline-primary:hover {
-      background-color: #007bff;
+    .thead-dark th tr {
+      background-color: blue;
       color: white;
+    }
+
+    .dashboard-cards .card {
+      border-radius: 0.75rem;
+      box-shadow: 0 0.5rem 1rem rgb(0 0 0 / 0.15);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .dashboard-cards .card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 1rem 1.5rem rgb(0 0 0 / 0.25);
+    }
+    .dashboard-cards .card h5 {
+      font-weight: 700;
+      margin-bottom: 0.8rem;
+      font-size: 1.25rem;
+    }
+    .dashboard-cards .card p.fs-2 {
+      font-weight: 800;
+      font-size: 2.5rem;
+      margin: 0;
+    }
+    .dashboard-cards .card p.fs-5 {
+      font-weight: 600;
+      font-size: 1.1rem;
+      margin-bottom: 0.3rem;
+    }
+    .dashboard-cards .card small {
+      color: #f8f9facc;
+      font-size: 0.875rem;
+    }
+
+    /* Customize background opacity for better text contrast */
+    .card.text-bg-primary {
+      background-color: rgba(13, 110, 253, 0.85);
+    }
+    .card.text-bg-success {
+      background-color: rgba(25, 135, 84, 0.85);
+    }
+    .card.text-bg-warning {
+      background-color: rgba(255, 193, 7, 0.85);
+      color: rgb(255, 255, 255);
+    }
+    .card.text-bg-info {
+      background-color: rgba(13, 202, 240, 0.85);
+      color: rgb(255, 255, 255);
+    }
+    .card.text-bg-secondary {
+      background-color: rgba(89, 255, 0, 0.85);
+    }
+    .dashboard-cards .col {
+      display: flex;
+    }
+
+    .dashboard-cards .card {
+      flex: 1 1 auto;
+      height: 70%;
+      width: 500px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 2rem 1.5rem;
     }
   </style>
 </head>
 <body class="container py-4">
- <h1 class="mb-4 text-primary">ប្រព័ន្ធគ្រប់គ្រងនិងការលក់នំខេក</h1>
+ <h1 class="mb-3 text-primary">ប្រព័ន្ធគ្រប់គ្រងការលក់នំខេក</h1>
+ <h1 class="mb-2 text-danger txt ">សំណាង នំខេក</h1>
 
-  <h3 class="mb-4">Dashboard (Admin)</h3>
+ <h5 class="mb-3 fs-1 text-center text-success">ហាងយើងខ្ញុំមានលក់នំខេកគ្រប់ប្រភេទតាមតម្រូវការដែលលោកអ្នកចង់បាន</h5>
+ <h5 class="mb-2 fs-3 text-center text-danger-emphasis">អាសយដ្ឋាន៖ ភូមិទ្រង់ភូមិ ឃុំព្រៃផ្គាំ ស្រុកអង្គរបូរី ខេត្តតាកែវ</h5>
 
-  <!-- Date filter form -->
-  <form method="GET" class="row g-3 mb-4">
-    <div class="col-auto">
-      <label for="from_date" class="form-label">ចាប់ពីថ្ងៃ:</label>
-      <input type="date" id="from_date" name="from_date" class="form-control" value="<?= htmlspecialchars($fromDate) ?>" required>
-    </div>
-    <div class="col-auto">
-      <label for="to_date" class="form-label">ដល់ថ្ងៃ:</label>
-      <input type="date" id="to_date" name="to_date" class="form-control" value="<?= htmlspecialchars($toDate) ?>" required>
-    </div>
-    <div class="col-auto align-self-end">
-      <button type="submit" class="btn btn-primary">បង្ហាញ</button>
-    </div>
-  </form>
 
-  <!-- Statistics cards -->
-  <div class="row mb-4">
-    <div class="col-md-4">
-      <div class="card text-bg-primary p-3">
-        <h5>ចំនួនការបញ្ជាទិញសរុប</h5>
-        <p class="fs-2"><?= $totalOrders ?></p>
-      </div>
-    </div>
-    <div class="col-md-4">
-      <div class="card text-bg-success p-3">
-        <h5>ចំណូលសរុប</h5>
-        <p class="fs-2">$<?= number_format($totalIncome ?? 0, 2) ?></p>
-      </div>
-    </div>
-    <div class="col-md-4">
-      <div class="card text-bg-warning p-3">
-        <h5>នំដែលលក់ច្រើនបំផុត</h5>
-        <p class="fs-5"><?= htmlspecialchars($bestCakeName) ?></p>
-        <small><?= $bestCakeQty ?> កំណត់</small>
-      </div>
+
+ <form method="GET" class="row g-3 mb-4">
+   <div class="col-auto">
+     <label for="from_date" class="form-label">ចាប់ពីថ្ងៃ:</label>
+     <input type="date" id="from_date" name="from_date" class="form-control" value="<?= htmlspecialchars($fromDate) ?>" required>
+   </div>
+   <div class="col-auto">
+     <label for="to_date" class="form-label">ដល់ថ្ងៃ:</label>
+     <input type="date" id="to_date" name="to_date" class="form-control" value="<?= htmlspecialchars($toDate) ?>" required>
+   </div>
+    <!-- Show current date and time -->
+ <div class="text-left text-muted mb-3">
+   ថ្ងៃទី <?= htmlspecialchars($dateNow) ?> ម៉ោង <?= htmlspecialchars($timeNow) ?>
+ </div>
+   <div class="col-auto align-self-end">
+     <button type="submit" class="btn btn-primary">បង្ហាញ</button>
+   </div>
+ </form>
+
+ <div class="row row-cols-1 row-cols-md-5 g-4 mb-4 dashboard-cards">
+  <div class="col">
+    <div class="card text-bg-primary text-center">
+      <h5>ចំនួនការបញ្ជាទិញសរុប</h5>
+      <p class="fs-5"><?= $totalOrders ?></p>
     </div>
   </div>
-
-  <!-- Action buttons -->
-  <div class="mb-3">
-    <a href="add.php" class="btn btn-primary">➕ បន្ថែមនំថ្មី</a>
-    <form action="order_add.php" method="GET" class="d-inline">
-      <button type="submit" class="btn btn-primary">បញ្ជាទិញ</button>
-    </form>
-    <a href="orders.php" class="btn btn-info">📦 មើលការបញ្ជាទិញ</a>
-    <a href="logout.php" class="btn btn-danger">ចាកចេញ</a>
-    <a href="export_statistics.php" class="btn btn-success float-end">📥 Export Statistics CSV</a>
-  </div>
-
-  <!-- Search form -->
-  <form method="GET" class="mb-3">
-    <input type="hidden" name="from_date" value="<?= htmlspecialchars($fromDate) ?>">
-    <input type="hidden" name="to_date" value="<?= htmlspecialchars($toDate) ?>">
-    <div class="input-group">
-      <input type="text" name="search" class="form-control" placeholder="ស្វែងរកនំ..." value="<?= htmlspecialchars($search) ?>">
-      <button type="submit" class="btn btn-outline-primary">🔍 ស្វែងរក</button>
+  <div class="col">
+    <div class="card text-bg-success text-center">
+      <h5>ចំណូលសរុប</h5>
+      <p class="fs-5">$<?= number_format($totalIncome ?? 0, 2) ?></p>
     </div>
-  </form>
+  </div>
+  <div class="col">
+    <div class="card text-bg-warning text-light text-center">
+      <h5>នំដែលលក់ច្រើនបំផុត</h5>
+      <p class="fs-5 text-danger"><?= htmlspecialchars($bestCakeName) ?></p>
+      <small class="fs-5"><?= $bestCakeQty ?> កំណត់</small>
+    </div>
+  </div>
+  <div class="col">
+    <div class="card text-bg-info text-light text-center">
+      <h5>ចំនួនអ្នកបានបង់ប្រាក់ពី <br> ABA</h5>
+      <p class="fs-5"><?= $totalPaid ?></p>
+    </div>
+  </div>
+  <div class="col">
+    <div class="card bg-danger-subtle text-center">
+      <h5>ចំនួនប្រាក់សរុបបង់តាម<br>ABA</h5>
+      <p class="fs-5 text-success">$<?= number_format($totalPaidAmount ?? 0, 2) ?></p>
+      <small class="fs-6 text-warning"><?= number_format($totalPaidAmount ?? 0, 2) ?> ដុល្លារ</small>
+    </div>
+  </div>
+ </div>
 
-  <!-- Cakes Table -->
-  <h2>បញ្ជីនំ</h2>
-  <table class="table table-bordered table-striped align-middle">
-  <thead class=" text-white text-center bg-success ">
-      <tr class="color-white text-center ">
-        <th >ID</th>
-        <th>រូបភាព</th>
-        <th>ឈ្មោះនំ</th>
-        <th>តម្លៃ</th>
-        <th>សេចក្ដីពិពណ៌នា</th>
-        <th>ថ្ងៃបង្កើត</th>
-        <th>សកម្មភាព</th>
-      </tr>
-    </thead>
-    <tbody class="text-center">
-      <?php while ($cake = $cakes->fetch_assoc()): ?>
-      <tr>
-        <td ><?= $cake['id'] ?></td>
-        <td><img src="images/<?= htmlspecialchars($cake['image']) ?>" width="80" class="img-thumbnail"></td>
-        <td><?= htmlspecialchars($cake['name']) ?></td>
-        <td>$<?= number_format($cake['price'], 2) ?></td>
-        <td><?= nl2br(htmlspecialchars($cake['description'])) ?></td>
-        <td><?= htmlspecialchars($cake['created_date']) ?></td>
-        <td>
-          <a href="edit.php?id=<?= $cake['id'] ?>" class="btn btn-sm btn-warning">✏️ កែ</a>
-          <a href="delete.php?id=<?= $cake['id'] ?>" class="btn btn-sm btn-danger" onclick="return confirm('តើអ្នកចង់លុបមែន?')">🗑️ លុប</a>
-        </td>
-      </tr>
-      <?php endwhile; ?>
-    </tbody>
-  </table>
+ <div class="mb-2">
+   <a href="add.php" class="btn btn-primary"><i class="fa-solid fa-cart-plus"></i> បន្ថែមនំថ្មី</a>
+   <form action="order_add.php" method="GET" class="d-inline">
+     <button type="submit" class="btn btn-success">បញ្ជាទិញ</button>
+   </form>
+   <a href="orders.php" class="btn btn-warning">មើលការបញ្ជាទិញ</a>
+   <a href="logout.php" class="btn btn-danger">ចាកចេញ</a>
+   <a href="export_statistics.php" class="btn btn-success float-end"><i class="fa-solid fa-file-export"></i> Export Statistics CSV</a>
+ </div>
+
+ <form method="GET" class="mb-3">
+   <input type="hidden" name="from_date" value="<?= htmlspecialchars($fromDate) ?>">
+   <input type="hidden" name="to_date" value="<?= htmlspecialchars($toDate) ?>">
+   <div class="input-group">
+     <input type="text" name="search" class="form-control" placeholder="ស្វែងរកនំ..." value="<?= htmlspecialchars($search) ?>">
+     <button type="submit" class="btn btn-outline-primary">🔍 ស្វែងរក</button>
+   </div>
+ </form>
+
+ <h2 class="text-warning">តារាងបញ្ជីនំ</h2>
+ <table class="table table-bordered table-striped align-middle">
+  <thead class="text-white text-center bg-success">
+    <tr>
+      <th class="bg-primary text-light">ល.រ</th>
+      <th class="bg-primary text-light">រូបភាព</th>
+      <th class="bg-primary text-light">ឈ្មោះនំ</th>
+      <th class="bg-primary text-light">តម្លៃ</th>
+      <th class="bg-primary text-light">បរិមាណ</th>
+      <th class="bg-primary text-light">សេចក្ដីពិពណ៌នា</th>
+      <th class="bg-primary text-light">កាលបរិច្ឆេទ</th>
+      <th class="bg-primary text-light">ពេលវេលាម៉ោង</th>
+      <th class="bg-primary text-light">សកម្មភាព</th>
+    </tr>
+  </thead>
+  <tbody class="text-center">
+  <?php $i = 1; while ($cake = $cakes->fetch_assoc()): ?>
+
+    <tr>
+      <td><?= $i++ ?></td>
+      <td><img src="images/<?= htmlspecialchars($cake['image']) ?>" width="80" class="img-thumbnail"></td>
+      <td><?= htmlspecialchars($cake['name']) ?></td>
+      <td>$<?= number_format($cake['price'], 2) ?></td>
+      <td><?= $cake['quantity'] ?></td>
+      <td><?= nl2br(htmlspecialchars($cake['description'])) ?></td>
+      
+
+
+   
+      <td>
+        <a href="edit.php?id=<?= $cake['id'] ?>" class="btn btn-sm btn-primary">
+          <i class="fa-solid fa-pen-to-square"></i> កែ
+        </a>
+        <a href="delete.php?id=<?= $cake['id'] ?>" class="btn btn-sm btn-danger" onclick="return confirm('តើអ្នកចង់លុបមែន?')">
+          <i class="fa-solid fa-trash"></i> លុប
+        </a>
+      </td>
+    </tr>
+  <?php endwhile; ?>
+</tbody>
+
+</table>
 
 </body>
-
 </html>

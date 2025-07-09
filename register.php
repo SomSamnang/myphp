@@ -36,9 +36,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 
     h2 {
+  
+      color: blue;
+      font-family: 'Angkor', serif;
+      font-style: normal;
       text-align: center;
-      margin-bottom: 25px;
-      color: #2c3e50;
     }
 
     .form-control, .form-select {
@@ -49,15 +51,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <body>
 
   <div class="register-box">
-    <h2>📝 បង្កើតគណនី</h2>
+    <h2>បង្កើតគណនី</h2>
     <form method="POST">
       <div class="mb-3">
-        <label class="form-label">ឈ្មោះអ្នកប្រើ</label>
+        <label class="form-label">ឈ្មោះអ្នកប្រើ:</label>
         <input name="username" type="text" class="form-control" placeholder="បញ្ចូលឈ្មោះអ្នកប្រើ" required>
       </div>
 
       <div class="mb-3">
-        <label class="form-label">ពាក្យសម្ងាត់</label>
+        <label class="form-label">ពាក្យសម្ងាត់:</label>
         <input name="password" type="password" class="form-control" placeholder="បញ្ចូលពាក្យសម្ងាត់" required>
       </div>
 
@@ -69,8 +71,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         </select>
       </div>
 
-      <button type="submit" class="btn btn-success w-100">✅ ចុះឈ្មោះ</button>
-      <a href="login.php" class="btn btn-secondary w-100 mt-2">⬅️ ចូលវិញ</a>
+      <button type="submit" class="btn btn-success w-100">ចុះឈ្មោះ</button>
+      <a href="login.php" class="btn btn-secondary w-100 mt-2">ចូលវិញ</a>
     </form>
   </div>
 

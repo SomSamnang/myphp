@@ -40,6 +40,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Angkor&family=Battambang:wght@100;300;400;700;900&family=Koulen&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <style>
     body {
       font-family: 'Battambang', Arial, sans-serif;
@@ -51,7 +52,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   </style>
 </head>
 <body class="container py-4">
-  <h2 class="mb-4">✏️ កែប្រែនំ</h2>
+  <h2 class="mb-4">កែប្រែនំ</h2>
 
   <form method="POST" enctype="multipart/form-data" class="card p-4 shadow-sm">
     <div class="mb-3">
@@ -90,8 +91,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
       <input name="image" type="file" class="form-control" accept="image/*">
     </div>
 
-    <button type="submit" class="btn btn-primary">💾 កែប្រែ</button>
-    <a href="dashboard.php" class="btn btn-secondary">⬅️ ត្រលប់</a>
+ <button type="submit" class="btn btn-primary mt-3">កែប្រែ</button>
+<a href="dashboard.php" class="btn btn-secondary mt-2">ត្រលប់</a>
+
   </form>
 </body>
 </html>
