@@ -261,8 +261,8 @@ $timeNow = date("g:i A");
   </div>
   <div class="col">
     <div class="card text-bg-info text-light text-center">
-      <h5>ចំនួនអ្នកបានបង់ប្រាក់ពី <br> ABA</h5>
-      <p class="fs-5"><?php echo $totalPaid; ?></p>
+      <h5>ចំនួនអ្នកបង់ប្រាក់តាម <br> ABA</h5>
+      <p class="fs-5"><?php echo $totalPaid; ?>​​ នាក់</p>
     </div>
   </div>
   <div class="col">

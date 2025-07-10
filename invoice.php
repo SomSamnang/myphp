@@ -115,53 +115,72 @@ $invoice_time = date('g:i A');
         margin: 0;
       }
     }
+ image {
+  display: flex;
+  margin: 0 auto;
+  max-width: 150px;
+  margin-bottom: 2px;
+}
+
   </style>
 </head>
 <body>
-  <div class="text-end no-print p-3">
-   <!-- ប៊ូតុងបោះពុម្ព -->
-<button class="btn btn-primary btn-print" onclick="printAndRedirect()">🖨️ បោះពុម្ពវិក័យបត្រ</button>
+<div class="text-end no-print p-3">
+  <div class="d-flex justify-content-end gap-2">
+    <button class="btn btn-primary btn-print w-auto" onclick="printAndRedirect()">
+      🖨️ បោះពុម្ពវិក័យបត្រ
+    </button>
+    <a href="dashboard.php" class="btn btn-secondary w-auto">
+      ↩ ត្រលប់
+    </a>
+  </div>
+</div>
 
 <script>
-function printAndRedirect() {
-  window.print();
-
-  // បន្ទាប់ពីបោះពុម្ពចប់ នឹងត្រលប់ទៅ dashboard.php
-  window.onafterprint = function() {
-    window.location.href = 'dashboard.php';
-  };
-}
+  function printAndRedirect() {
+    window.print();
+    setTimeout(function () {
+      window.location.href = "dashboard.php";
+    }, 1000);
+  }
 </script>
-
   </div>
+  <div class="invoice-container ">
+<div class="text-center mb-0">
+  <h1 class="mb-0"> វិក័យបត្រ</h1>
+  <h2 class="text-primary text-center fs-4 mb-0">Invoice</h2>
 
-  <div class="invoice-container">
-    <h1 class="text-center">វិក័យប័ត្រ</h1>
-    <h1 class="text-center fs-3">invoice</h1>
+</div>
 
-    <div class="invoice-header mb-3">
-      <p><strong>លេខវិក័យប័ត្រ៖</strong> <?= $invoice_number ?></p>
+
+
+    <div class="invoice-header">
+      <img src="images/logo.jpg" alt="Logo" style="max-width: 100px; margin-left:60px;" />
+      <p><strong>លេខវិក័យបត្រ៖</strong> <?= $invoice_number ?></p>
+       
       <p><strong>កាលបរិច្ឆេទ៖</strong> <?= $invoice_date ?></p>
       <p><strong>ម៉ោង៖</strong> <?= $invoice_time ?></p>
+      <p><strong>អាសយដ្ឋាន៖</strong> ផ្ទះលេខ៖123E ផ្លូវលេខ 162
+ភូមិទ្រង់ភូមិ ឃុំព្រៃផ្គាំ ស្រុកអង្គរបូរី ខេត្តតាកែវ​ </p>
+
+     
+      
     </div>
 
     <table>
   <thead>
   <tr>
-    <th>ល.រ</th>
-
-    <th>ឈ្មោះនំ</th>
-    <th>តម្លៃ</th>
-    <th>បរិមាណ</th>
-    <th>សរុប</th>
+    <th class="bg-primary text-light">ល.រ</th>
+    <th class="bg-primary text-light">ឈ្មោះនំ</th>
+    <th class="bg-primary text-light">តម្លៃ</th>
+    <th class="bg-primary text-light">បរិមាណ</th>
+    <th class="bg-primary text-light">សរុប</th>
   </tr>
 </thead>
-
 <tbody>
   <?php $i = 1; foreach ($orders as $order): ?>
     <tr>
-      <td><?= $i++ ?></td> <!-- ល.រ -->
-
+      <td><?= $i++ ?></td> 
       <td><?= htmlspecialchars($order['cake_name']) ?></td>
       <td><?= number_format($order['price'], 2) ?>$</td>
       <td><?= $order['quantity'] ?></td>
@@ -169,21 +188,21 @@ function printAndRedirect() {
     </tr>
   <?php endforeach; ?>
   <tr class="total-row">
-    <td colspan="4" class="text-end">សរុប:</td>
-    <td><?= number_format($total_amount, 2) ?>$</td>
+    <td colspan="4" class="text-end text-primary">សរុប:</td>
+    <td class="text-danger "><?= number_format($total_amount, 2) ?>$</td>
   </tr>
 </tbody>
 
     </table>
 
-    <div class="mt-4">
-      <h3>ABA Pay QR Code ខាងក្រោម:</h3>
-      <img src="images/randy-aba.jpg" alt="ABA Pay QR Code" style="margin-left: 50px; max-width: 200px; padding: 10px; border: 1px solid #ccc; border-radius: 8px;" />
-      <h3 class="mt-3">សម្រាប់បង់ប្រាក់សរុប: $<?= number_format($total_amount, 2) ?></h3>
+    <div class="mt-1">
+      <h3 class="fs-6" style="margin-left: 40px; ">ABA Pay QR Code ខាងក្រោម:</h3>
+      <img src="images/randy-aba.jpg" alt="ABA Pay QR Code" style="margin-left: 50px; max-width: 170px; padding: 10px; border: 1px solid #ccc; border-radius: 8px;" />
+      <h3 class="mt-2 fs-5 text-primary" style="margin-left">សម្រាប់បង់ប្រាក់សរុប: $<?= number_format($total_amount, 2) ?></h3>
     </div>
 
-    <p class="mt-3">បញ្ជាក់៖ សូមពិនិត្យឲ្យបានត្រឹមត្រូវមុនពេលចេញវិក័យប័ត្រ។ សូមរក្សាវិក័យបត្រនេះសម្រាប់ការបង់ប្រាក់។</p>
-    <p>អរគុណសម្រាប់ការគាំទ្រហាងនំខេករបស់យើង!</p>
+    <p class="mt-1 text-danger ">បញ្ជាក់៖ សូមពិនិត្យមើលឥវ៉ានឲ្យបានត្រឹមត្រូវមុនពេលចេញ សូមរក្សាវិក័យបត្រនេះសម្រាប់ការបង់ប្រាក់។</p>
+    <p class="mt-1  ">អរគុណសម្រាប់ការគាំទ្រហាងនំខេករបស់យើង!</p>
   </div>
 </body>
 </html>

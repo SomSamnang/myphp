@@ -103,7 +103,7 @@ unset($_SESSION['success'], $_SESSION['order_ids'], $_SESSION['errors']);
     <div id="hidden-inputs"></div>
 
     <button type="submit" class="btn btn-primary w-100">បញ្ជាទិញ</button>
-    <a href="dashboard.php" class="btn btn-secondary w-100 mt-2">ត្រឡប់ទៅ Dashboard</a>
+    <a href="dashboard.php" class="btn btn-secondary w-100 mt-2">ត្រឡប់ទៅ</a>
   </form>
 </div>
 

@@ -57,12 +57,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 
     }
+    .form-label {
+      font-weight: bold;
+      font-size: 1.1rem;
+       font-family: 'Battambang', Arial, sans-serif;
+
+    }
+
   </style>
 </head>
 <body class="container">
   <h2 class="mb-4">បន្ថែមនំថ្មី</h2>
 
-  <form action="" method="post" enctype="multipart/form-data" class="row g-4">
+  <form action="" method="post" enctype="multipart/form-data" class="row g-4 ">
     <div class="col-md-6">
       <label class="form-label">ឈ្មោះនំ:</label>
       <input type="text" name="name" class="form-control" required>
