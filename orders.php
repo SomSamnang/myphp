@@ -3,6 +3,10 @@ session_start();
 include "db.php";
 include "datetime.php"; // ✅ ដកថ្ងៃ/ម៉ោងចេញពី datetime.php
 
+date_default_timezone_set("Asia/Phnom_Penh");
+$currentDate = date("d-F-Y");
+$currentTime = date("g:i A");
+
 if (!isset($_SESSION["user_id"]) || $_SESSION["role"] != "admin") {
   header("Location: login.php");
   exit;
@@ -81,7 +85,7 @@ $result = $stmt->get_result();
         <th class="bg-primary text-light">បរិមាណ</th>
         <th class="bg-primary text-light">សរុប</th>
         <th class="bg-primary text-light">កាលបរិច្ឆេទ</th>
-
+      <th class="bg-primary text-light">ម៉ោង</th>
         <th class="bg-primary text-light">ស្ថានភាព</th>
         <th class="bg-primary text-light">សកម្មភាព</th>
       </tr>
@@ -89,8 +93,7 @@ $result = $stmt->get_result();
     <tbody>
       <?php $i = 1; while ($row = $result->fetch_assoc()): ?>
         <?php
-          $createdDate = date("d-F-Y", strtotime($row['order_date']));
-          $createdTime = date("g:i A", strtotime($row['order_date']));
+           list($createdDate, $createdTime) = formatKhDateTime($row['order_date'])
           
         ?>
         <tr>
@@ -100,11 +103,8 @@ $result = $stmt->get_result();
           <td class="text-center"><?= $row["quantity"] ?></td>
           <td class="text-center">$<?= number_format($row["price"] * $row["quantity"], 2) ?></td>
 
-  <td class="text-center"><?= $currentDate ?></td>
-  
-  
-
-
+          <td class="text-center"><?= $createdDate ?> </td>
+          <td class="text-center"><?= $createdTime ?></td>
           <td class="text-center">
             <?php if ($row['payment_status'] !== 'paid'): ?>
               <a href="mark_paid.php?order_id=<?= $row['id'] ?>" class="btn btn-sm btn-success" onclick="return confirm('តើអ្នកប្រាកដថាចង់ធ្វើបង់ប្រាក់?');">💵 បង់ប្រាក់</a>

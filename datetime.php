@@ -1,7 +1,11 @@
 <?php
+function formatKhDateTime($datetime) {
+  $dateTime = new DateTime($datetime, new DateTimeZone("UTC")); // assume DB is in UTC
+  $dateTime->setTimezone(new DateTimeZone("Asia/Phnom_Penh"));  // convert to Phnom Penh
 
-date_default_timezone_set("Asia/Phnom_Penh");
+  $date = $dateTime->format("d-F-Y");
+  $time = $dateTime->format("g:i A");
 
-$currentDate = date("d-F-Y");
-$currentTime = date("g:i A");
+  return [$date, $time];
+}
 ?>

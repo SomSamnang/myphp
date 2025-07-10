@@ -79,7 +79,7 @@ unset($_SESSION['success'], $_SESSION['order_ids'], $_SESSION['errors']);
     </div>
   <?php endif; ?>
 
-  <form id="order-form" method="POST" action="order_submit.php">
+  <form id="  " method="POST" action="order_submit.php">
     <div class="mb-3 d-flex gap-2 align-items-center">
       <select id="cake-select" class="form-select" style="flex: 3;">
         <option value="">-- ជ្រើសរើស នំ --</option>
@@ -101,7 +101,7 @@ unset($_SESSION['success'], $_SESSION['order_ids'], $_SESSION['errors']);
 
     <!-- Hidden inputs for submitting -->
     <div id="hidden-inputs"></div>
-
+<input type="hidden" name="order_date" id="order_date">
     <button type="submit" class="btn btn-primary w-100">បញ្ជាទិញ</button>
     <a href="dashboard.php" class="btn btn-secondary w-100 mt-2">ត្រឡប់ទៅ</a>
   </form>

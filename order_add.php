@@ -153,6 +153,19 @@ $cakes = $conn->query("SELECT * FROM cakes");
       delete addedCakes[cakeId];
     }
   });
+
+if (!document.getElementById('input-order-date')) {
+  const now = new Date();
+  const datetimeValue = now.toISOString().slice(0, 19).replace("T", " ");
+
+  const inputDatetime = document.createElement('input');
+  inputDatetime.type = 'hidden';
+  inputDatetime.name = 'order_date';
+  inputDatetime.value = datetimeValue;
+  inputDatetime.id = 'input-order-date';
+  hiddenInputs.appendChild(inputDatetime);
+}
+
 </script>
 
 </body>

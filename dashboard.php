@@ -100,6 +100,33 @@ $chartDataJson = json_encode($chartData);
 date_default_timezone_set("Asia/Phnom_Penh");
 $dateNow = date("d-F-Y");
 $timeNow = date("g:i A");
+
+
+$bgClass = "text-bg-warning"; // fallback background
+$textColor = "text-white";     // fallback text color
+
+$cakeName = strtolower($bestCakeName);
+
+// Background color condition
+if (strpos($cakeName, 'yellow') !== false) {
+    $bgClass = "text-bg-primary"; // blue background only for yellow cake
+    $textColor = "text-warning";
+}
+
+// Text color for the <p>
+if (strpos($cakeName, 'red') !== false) {
+    $textColor = "text-danger";
+} elseif (strpos($cakeName, 'green') !== false) {
+    $textColor = "text-success";
+} elseif (strpos($cakeName, 'blue') !== false) {
+    $textColor = "text-primary";
+} elseif (strpos($cakeName, 'black') !== false) {
+    $textColor = "text-dark";
+} elseif (strpos($cakeName, 'pink') !== false) {
+    $textColor = "text-pink"; // custom class, optional
+} elseif (strpos($cakeName, 'chocolate') !== false || strpos($cakeName, 'sopcola') !== false) {
+    $textColor = "text-brown"; // You can define this in CSS
+}
 ?>
 
 <!DOCTYPE html>
@@ -137,7 +164,8 @@ $timeNow = date("g:i A");
       font-weight: 400;
       font-style: normal;
     }
-  
+  .text-pink { color: #e83e8c; }
+  .text-brown { color: #8B4513; }
     .card {
       margin-bottom: 20px;
     }
@@ -252,13 +280,13 @@ $timeNow = date("g:i A");
       <p class="fs-5">$<?php echo number_format($totalIncome ?? 0, 2); ?></p>
     </div>
   </div>
-  <div class="col">
-    <div class="card text-bg-warning text-light text-center">
-      <h5>នំដែលលក់ច្រើនបំផុត</h5>
-      <p class="fs-5 text-danger"><?php echo htmlspecialchars($bestCakeName); ?></p>
-      <small class="fs-5"><?php echo $bestCakeQty; ?> កំណត់</small>
-    </div>
+<div class="col">
+  <div class="card <?= $bgClass ?> text-center">
+    <h5 class="text-white">នំដែលលក់ច្រើនបំផុត</h5>
+    <p class="fs-5 <?= $textColor ?>"><?= htmlspecialchars($bestCakeName); ?></p>
+    <small class="fs-5"><?= $bestCakeQty; ?> កំណត់</small>
   </div>
+</div>
   <div class="col">
     <div class="card text-bg-info text-light text-center">
       <h5>ចំនួនអ្នកបង់ប្រាក់តាម <br> ABA</h5>
